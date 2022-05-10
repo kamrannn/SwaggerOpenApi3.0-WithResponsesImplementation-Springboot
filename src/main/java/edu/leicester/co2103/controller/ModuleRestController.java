@@ -104,81 +104,151 @@ public class ModuleRestController {
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully deleted the module",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "404", description = "Not found the module against this ID",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = {
+                            @Content
+                    })
+    })
     @DeleteMapping
-    public String delete(@RequestParam(name = "code") String code) {
+    public ResponseEntity<Object> delete(@RequestParam(name = "code") String code) {
         try {
             Optional<Module> module = moduleRepository.findById(code);
             if (module.isPresent()) {
                 sessionRepository.deleteAll(module.get().getSessions());
                 module.get().getSessions().clear();
                 moduleRepository.delete(module.get());
-                return "Module is successfully deleted from the database";
+                return new ResponseEntity<>("Module is successfully deleted from the database", HttpStatus.OK);
             } else {
-                throw new RuntimeException("There is no convenor against this Id");
+                return new ResponseEntity<>("There is no convenor against this Id", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully fetched the modules taught by the specific convenor",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Session.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "Not found the module against this ID",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = {
+                            @Content
+                    })
+    })
     @GetMapping("/{code}/sessions")
-    public List<Session> modulesTaughtByConvenor(@PathVariable(name = "code") String code) {
+    public ResponseEntity<Object> modulesTaughtByConvenor(@PathVariable(name = "code") String code) {
         try {
             Optional<Module> module = moduleRepository.findById(code);
             if (module.isPresent()) {
-                return module.get().getSessions();
+                return new ResponseEntity<>(module.get().getSessions(), HttpStatus.OK);
             } else {
-                throw new RuntimeException("There is no module against this Id");
+                return new ResponseEntity<>("There is no module against this Id", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully created the session within a module",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Session.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "Not found the module against this ID",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = {
+                            @Content
+                    })
+    })
     @PostMapping("/{code}/sessions")
-    public List<Session> createSessionInModule(@PathVariable(name = "code") String code, @RequestBody Session session) {
+    public ResponseEntity<Object> createSessionInModule(@PathVariable(name = "code") String code, @RequestBody Session session) {
         try {
             Optional<Module> module = moduleRepository.findById(code);
             if (module.isPresent()) {
                 module.get().getSessions().add(session);
                 moduleRepository.save(module.get());
-                return module.get().getSessions();
+                return new ResponseEntity<>(module.get().getSessions(), HttpStatus.OK);
             } else {
-                throw new RuntimeException("There is no module against this Id");
+                return new ResponseEntity<>("There is no module against this Id", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully fetched the session from a specific module",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Session.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "Not Found",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = {
+                            @Content
+                    })
+    })
     @GetMapping("/{code}/sessions/{id}")
-    public Session getSessionFromAModule(@PathVariable(name = "code") String code, @PathVariable(name = "id") long sessionId) {
+    public ResponseEntity<Object> getSessionFromAModule(@PathVariable(name = "code") String code, @PathVariable(name = "id") long sessionId) {
         try {
             Optional<Module> module = moduleRepository.findById(code);
             if (module.isPresent()) {
                 if (module.get().getSessions().isEmpty()) {
-                    throw new RuntimeException("There are no sessions in this module");
+                    return new ResponseEntity<>("There are no sessions in this module", HttpStatus.NOT_FOUND);
                 } else {
                     for (Session session : module.get().getSessions()
                     ) {
                         if (session.getId() == sessionId) {
-                            return session;
+                            return new ResponseEntity<>(session, HttpStatus.OK);
                         } else {
-                            throw new RuntimeException("There is no session with this ID in this module");
+                            return new ResponseEntity<>("There is no session with this ID in this module", HttpStatus.NOT_FOUND);
                         }
                     }
+                    return new ResponseEntity<>("There is no session available in this module", HttpStatus.NOT_FOUND);
                 }
-                return null;
             } else {
-                throw new RuntimeException("There is no module against this Id");
+                return new ResponseEntity<>("There is no module against this Id", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully updated the session within a module",
+                    content = {
+                            @Content(mediaType = "application/json", schema = @Schema(implementation = Session.class))
+                    }),
+            @ApiResponse(responseCode = "404", description = "Not found the module against this code",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = {
+                            @Content
+                    })
+    })
     @PutMapping("/{code}/sessions")
-    public List<Session> updateSessionInModule(@PathVariable(name = "code") String code, @RequestBody Session session) {
+    public ResponseEntity<Object> updateSessionInModule(@PathVariable(name = "code") String code, @RequestBody Session session) {
         try {
             Optional<Module> module = moduleRepository.findById(code);
             if (module.isPresent()) {
@@ -191,17 +261,31 @@ public class ModuleRestController {
                         sessionRepository.save(existingSession);
                     }
                 }
-                return module.get().getSessions();
+                return new ResponseEntity<>(module.get().getSessions(), HttpStatus.OK);
             } else {
-                throw new RuntimeException("There is no module against this Id");
+                return new ResponseEntity<>("There is no module against this Id", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully deleted the specific session from a specific module",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "404", description = "Not found !!",
+                    content = {
+                            @Content
+                    }),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error",
+                    content = {
+                            @Content
+                    })
+    })
     @DeleteMapping("/{code}/sessions/{id}")
-    public String deleteSessionFromAModule(@PathVariable(name = "code") String code, @PathVariable(name = "id") long sessionId) {
+    public ResponseEntity<Object> deleteSessionFromAModule(@PathVariable(name = "code") String code, @PathVariable(name = "id") long sessionId) {
         try {
             Optional<Module> module = moduleRepository.findById(code);
             if (module.isPresent()) {
@@ -213,18 +297,18 @@ public class ModuleRestController {
                         if (session.getId() == sessionId) {
                             module.get().getSessions().remove(session);
                             moduleRepository.saveAndFlush(module.get());
-                            return "Session is successfully deleted from the selected module";
+                            return new ResponseEntity<>("Session is successfully deleted from the selected module", HttpStatus.OK);
                         } else {
-                            throw new RuntimeException("There is no session with this ID in this module");
+                            return new ResponseEntity<>("There is no session with this ID in this module", HttpStatus.NOT_FOUND);
                         }
                     }
+                    return new ResponseEntity<>("There is no session available in this module", HttpStatus.NOT_FOUND);
                 }
-                return "Session is successfully deleted from the selected module";
             } else {
-                throw new RuntimeException("There is no module against this Id");
+                return new ResponseEntity<>("There is no module against this Id", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

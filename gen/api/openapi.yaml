@@ -1,0 +1,472 @@
+openapi: 3.0.1
+info:
+  description: Its the description of EOY coursework
+  title: part1
+  version: "3.0"
+servers:
+- description: Generated server url
+  url: http://localhost:8080
+paths:
+  /modules:
+    delete:
+      operationId: delete
+      parameters:
+      - explode: true
+        in: query
+        name: code
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: OK
+      tags:
+      - module-rest-controller
+      x-accepts: '*/*'
+    get:
+      operationId: list
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/Module'
+                type: array
+          description: OK
+      tags:
+      - module-rest-controller
+      x-accepts: '*/*'
+    post:
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Module'
+          description: OK
+      tags:
+      - module-rest-controller
+      x-contentType: application/json
+      x-accepts: '*/*'
+    put:
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Module'
+          description: OK
+      tags:
+      - module-rest-controller
+      x-contentType: application/json
+      x-accepts: '*/*'
+  /modules/{code}/sessions:
+    get:
+      operationId: modulesTaughtByConvenor
+      parameters:
+      - explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/Session'
+                type: array
+          description: OK
+      tags:
+      - module-rest-controller
+      x-accepts: '*/*'
+    post:
+      operationId: createSessionInModule
+      parameters:
+      - explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Session'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/Session'
+                type: array
+          description: OK
+      tags:
+      - module-rest-controller
+      x-contentType: application/json
+      x-accepts: '*/*'
+    put:
+      operationId: updateSessionInModule
+      parameters:
+      - explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Session'
+        required: true
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                items:
+                  $ref: '#/components/schemas/Session'
+                type: array
+          description: OK
+      tags:
+      - module-rest-controller
+      x-contentType: application/json
+      x-accepts: '*/*'
+  /convenors:
+    delete:
+      operationId: delete_1
+      parameters:
+      - explode: true
+        in: query
+        name: id
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: form
+      responses:
+        "200":
+          description: Successfully deleted the convenor from the database
+        "404":
+          description: There is no convenor against this ID
+        "500":
+          description: Internal Server Error
+      tags:
+      - convenor-rest-controller
+      x-accepts: application/json
+    get:
+      operationId: list_1
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+          description: Successfully fetched the list of convenors
+        "500":
+          description: Internal Server Error
+        "404":
+          description: There is no convenor in the database
+      tags:
+      - convenor-rest-controller
+      x-accepts: application/json
+    post:
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Convenor'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+          description: Successfully created the Convenor
+      tags:
+      - convenor-rest-controller
+      x-contentType: application/json
+      x-accepts: application/json
+    put:
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Convenor'
+        required: true
+      responses:
+        "404":
+          description: There is no convenor against this ID
+        "500":
+          description: Internal Server Error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+          description: Successfully updated the convenor
+      tags:
+      - convenor-rest-controller
+      x-contentType: application/json
+      x-accepts: application/json
+  /sessions:
+    delete:
+      operationId: deleteAllSessions
+      responses:
+        "200":
+          description: All sessions are successfully deleted
+        "500":
+          description: Internal Server Error
+      tags:
+      - session-rest-controller
+      x-accepts: application/json
+    get:
+      operationId: listAllSessions
+      parameters:
+      - explode: true
+        in: query
+        name: convenor
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: module
+        required: false
+        schema:
+          type: string
+        style: form
+      responses:
+        "404":
+          description: Not Found
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: Successfully fetched the list of sessions
+        "500":
+          description: Internal Server Error
+      tags:
+      - session-rest-controller
+      x-accepts: application/json
+  /modules/{code}/sessions/{id}:
+    delete:
+      operationId: deleteSessionFromAModule
+      parameters:
+      - explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                type: string
+          description: OK
+      tags:
+      - module-rest-controller
+      x-accepts: '*/*'
+    get:
+      operationId: getSessionFromAModule
+      parameters:
+      - explode: false
+        in: path
+        name: code
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "200":
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: OK
+      tags:
+      - module-rest-controller
+      x-accepts: '*/*'
+  /convenors/{id}/modules:
+    get:
+      operationId: modulesTaughtByConvenor_1
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      responses:
+        "500":
+          description: Internal Server Error
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+          description: Successfully fetched the list of modules Taught by Convenor
+        "404":
+          description: There is no convenor in the database
+      tags:
+      - convenor-rest-controller
+      x-accepts: application/json
+components:
+  schemas:
+    Module:
+      example:
+        sessions:
+        - duration: 1
+          datetime: 2000-01-23T04:56:07.000+00:00
+          topic: topic
+          id: 6
+        - duration: 1
+          datetime: 2000-01-23T04:56:07.000+00:00
+          topic: topic
+          id: 6
+        code: code
+        level: 0
+        optional: true
+        title: title
+      properties:
+        code:
+          type: string
+        title:
+          type: string
+        level:
+          format: int32
+          type: integer
+        optional:
+          type: boolean
+        sessions:
+          items:
+            $ref: '#/components/schemas/Session'
+          type: array
+      type: object
+    Session:
+      example:
+        duration: 1
+        datetime: 2000-01-23T04:56:07.000+00:00
+        topic: topic
+        id: 6
+      properties:
+        id:
+          format: int64
+          type: integer
+        topic:
+          type: string
+        datetime:
+          format: date-time
+          type: string
+        duration:
+          format: int32
+          type: integer
+      type: object
+    Convenor:
+      example:
+        name: name
+        id: 0
+        position: GTA
+        modules:
+        - sessions:
+          - duration: 1
+            datetime: 2000-01-23T04:56:07.000+00:00
+            topic: topic
+            id: 6
+          - duration: 1
+            datetime: 2000-01-23T04:56:07.000+00:00
+            topic: topic
+            id: 6
+          code: code
+          level: 0
+          optional: true
+          title: title
+        - sessions:
+          - duration: 1
+            datetime: 2000-01-23T04:56:07.000+00:00
+            topic: topic
+            id: 6
+          - duration: 1
+            datetime: 2000-01-23T04:56:07.000+00:00
+            topic: topic
+            id: 6
+          code: code
+          level: 0
+          optional: true
+          title: title
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        position:
+          enum:
+          - GTA
+          - LECTURER
+          - PROFESSOR
+          type: string
+        modules:
+          items:
+            $ref: '#/components/schemas/Module'
+          type: array
+      type: object
+

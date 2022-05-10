@@ -1,6 +1,375 @@
 openapi: 3.0.1
-
 info:
   title: part1
-
-# Placeholder file, replace this content with your Open API 3 spec
+  description: Its the description of coursework
+  version: "3.0"
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+paths:
+  /modules:
+    get:
+      tags:
+        - module-rest-controller
+      operationId: list
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Module'
+    put:
+      tags:
+        - module-rest-controller
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Module'
+    post:
+      tags:
+        - module-rest-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Module'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Module'
+    delete:
+      tags:
+        - module-rest-controller
+      operationId: delete
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /modules/{code}/sessions:
+    get:
+      tags:
+        - module-rest-controller
+      operationId: modulesTaughtByConvenor
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+    put:
+      tags:
+        - module-rest-controller
+      operationId: updateSessionInModule
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Session'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+    post:
+      tags:
+        - module-rest-controller
+      operationId: createSessionInModule
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Session'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Session'
+  /convenors:
+    get:
+      tags:
+        - convenor-rest-controller
+      operationId: list_1
+      responses:
+        "200":
+          description: Successfully fetched the list of convenors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+        "500":
+          description: Internal Server Error
+        "404":
+          description: There is no convenor in the database
+    put:
+      tags:
+        - convenor-rest-controller
+      operationId: update_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Convenor'
+        required: true
+      responses:
+        "404":
+          description: There is no convenor against this ID
+        "500":
+          description: Internal Server Error
+        "200":
+          description: Successfully updated the convenor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+    post:
+      tags:
+        - convenor-rest-controller
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Convenor'
+        required: true
+      responses:
+        "500":
+          description: Internal Server Error
+        "200":
+          description: Successfully created the Convenor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Convenor'
+    delete:
+      tags:
+        - convenor-rest-controller
+      operationId: delete_1
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Successfully deleted the convenor from the database
+        "404":
+          description: There is no convenor against this ID
+        "500":
+          description: Internal Server Error
+  /sessions:
+    get:
+      tags:
+        - session-rest-controller
+      operationId: listAllSessions
+      parameters:
+        - name: convenor
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int64
+        - name: module
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "404":
+          description: Not Found
+        "200":
+          description: Successfully fetched the list of sessions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+        "500":
+          description: Internal Server Error
+    delete:
+      tags:
+        - session-rest-controller
+      operationId: deleteAllSessions
+      responses:
+        "200":
+          description: All sessions are successfully deleted
+        "500":
+          description: Internal Server Error
+  /modules/{code}/sessions/{id}:
+    get:
+      tags:
+        - module-rest-controller
+      operationId: getSessionFromAModule
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Session'
+    delete:
+      tags:
+        - module-rest-controller
+      operationId: deleteSessionFromAModule
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /convenors/{id}/modules:
+    get:
+      tags:
+        - convenor-rest-controller
+      operationId: modulesTaughtByConvenor_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "500":
+          description: Internal Server Error
+        "200":
+          description: Successfully fetched the list of modules Taught by Convenor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Module'
+        "404":
+          description: There is no convenor in the database
+components:
+  schemas:
+    Module:
+      type: object
+      properties:
+        code:
+          type: string
+        title:
+          type: string
+        level:
+          type: integer
+          format: int32
+        optional:
+          type: boolean
+        sessions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+    Session:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        topic:
+          type: string
+        datetime:
+          type: string
+          format: date-time
+        duration:
+          type: integer
+          format: int32
+    Convenor:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        position:
+          type: string
+          enum:
+            - GTA
+            - LECTURER
+            - PROFESSOR
+        modules:
+          type: array
+          items:
+            $ref: '#/components/schemas/Module'

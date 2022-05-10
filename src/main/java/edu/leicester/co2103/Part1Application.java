@@ -19,7 +19,7 @@ import edu.leicester.co2103.repo.ModuleRepository;
 import edu.leicester.co2103.repo.SessionRepository;
 
 @SpringBootApplication
-@OpenAPIDefinition(info = @Info(title = "part1", version = "3.0", description = "Its the description of EOY coursework"))
+@OpenAPIDefinition(info = @Info(title = "part1", version = "3.0", description = "Its the description of coursework"))
 public class Part1Application implements ApplicationRunner {
 
     @Autowired
